@@ -61,5 +61,11 @@ public class BatteryHealthCheckerTest {
 		Battery battery = new Battery(CoolingType.PASSIVE_COOLING, "Luminous");
 		BatteryHealthChecker.checkAndAlert(AlertTarget.TO_CONTROLLER, battery, 50);
 	}
+	
+	@Test
+	public void consoleAlerterTest() {
+		Battery battery = new Battery(CoolingType.PASSIVE_COOLING, "Luminous");
+		BatteryHealthChecker.checkAndAlert(AlertTarget.TO_CONSOLE, battery, 50);
+	}
 
 }
