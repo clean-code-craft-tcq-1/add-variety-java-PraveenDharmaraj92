@@ -7,7 +7,8 @@ package alert;
 public enum AlertTarget {
 	
 	TO_CONTROLLER("Controller"),
-    TO_EMAIL("Email");
+    TO_EMAIL("Email"),
+    TO_CONSOLE("Console");
 	
 	private String alertTarget;
 	
