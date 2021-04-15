@@ -12,7 +12,7 @@ public class AlerterFactory implements IObjectFactory{
 
 	private static AlerterFactory instance;
 
-	public IAlerter getAlerter(String alerterType) {
+	public IAlerter getAlerter(String alerterType) throws Exception {
 		return (IAlerter) getObject(alerterType, PACKAGE_NAME);
 	}
 

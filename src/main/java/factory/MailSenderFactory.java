@@ -9,7 +9,7 @@ public class MailSenderFactory implements IObjectFactory {
 
 	private static MailSenderFactory instance;
 
-	public IMailSender getMailSender(BreachType breachType) {
+	public IMailSender getMailSender(BreachType breachType) throws Exception {
 		return (IMailSender) getObject(breachType.getBreachAsString()+"BreachMailSender", PACKAGE_NAME);
 	}
 

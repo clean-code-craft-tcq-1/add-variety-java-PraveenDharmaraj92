@@ -12,7 +12,7 @@ public class CoolingTypeFactory implements IObjectFactory{
 
 	private static CoolingTypeFactory instance;
 
-	public ICooling getCoolingType(String coolingType) {
+	public ICooling getCoolingType(String coolingType) throws Exception {
 		return (ICooling) getObject(coolingType, PACKAGE_NAME);
 }
 
