@@ -18,7 +18,7 @@ public class BatteryHealthChecker {
 		return breachChecker.apply(new BreachCheckModel(limit, value));
 	}
 	
-	public static void checkAndAlert(IAlerter alerter, ICooling cooling, BreachCheckerFunction breachChecker,Battery battery, double temperatureInC) {
+	public static void checkAndAlert(IAlerter alerter, ICooling cooling, BreachCheckerFunction breachChecker, double temperatureInC) {
 		BreachType breachType = classifyTemperatureBreach(cooling, breachChecker,temperatureInC);
 		alerter.alert(breachType);
 	}
