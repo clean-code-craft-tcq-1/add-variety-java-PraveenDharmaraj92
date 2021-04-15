@@ -1,8 +1,10 @@
 package batteryhealth;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.mockito.Mockito;
 
 import alert.IAlerter;
@@ -21,6 +23,9 @@ public class BatteryHealthCheckerTest {
 	private static final String MEDIUM_ACTIVE_COOLING = "MediumActiveCooling";
 	private static final String HIGH_ACTIVE_COOLING = "HighActiveCooling";
 	private static final String PASSIVE_COOLING = "PassiveCooling";
+	
+	@Rule
+	public final ExpectedException thrownException = ExpectedException.none();
 
 	@Test
 	public void inferBreachHighTest() {
@@ -41,21 +46,21 @@ public class BatteryHealthCheckerTest {
 	}
 
 	@Test
-	public void classifyTempBreachPassiveTest() {
+	public void classifyTempBreachPassiveTest() throws Exception {
 		ICooling iCooling = CoolingTypeFactory.getInstance().getCoolingType(PASSIVE_COOLING);
 		assertTrue(
 				BatteryHealthChecker.classifyTemperatureBreach(iCooling, BREACH_CHECKER,30) == BreachType.NORMAL);
 	}
 
 	@Test
-	public void classifyTempBreachHighActiveTest() {
+	public void classifyTempBreachHighActiveTest() throws Exception {
 		ICooling iCooling = CoolingTypeFactory.getInstance().getCoolingType(HIGH_ACTIVE_COOLING);
 		assertTrue(
 				BatteryHealthChecker.classifyTemperatureBreach(iCooling, BREACH_CHECKER,40) == BreachType.NORMAL);
 	}
 
 	@Test
-	public void classifyTempBreachMediumActiveTest() {
+	public void classifyTempBreachMediumActiveTest() throws Exception {
 		ICooling iCooling = CoolingTypeFactory.getInstance().getCoolingType(MEDIUM_ACTIVE_COOLING);
 		assertTrue(BatteryHealthChecker.classifyTemperatureBreach(iCooling,BREACH_CHECKER,
 				35) == BreachType.NORMAL);
@@ -69,30 +74,25 @@ public class BatteryHealthCheckerTest {
 	}
 
 	@Test
-	public void emailAlerterTest() {
-		Battery battery = new Battery(HIGH_ACTIVE_COOLING, "Luminous");
-		checkAndAlertTest(battery, "EmailAlerter",HIGH_ACTIVE_COOLING, BreachType.TOO_HIGH);
+	public void emailAlerterTest() throws Exception {
+		checkAndAlertTest("EmailAlerter",HIGH_ACTIVE_COOLING, BreachType.TOO_HIGH);
 	}
 
 	@Test
-	public void controllerAlerterTest() {
-		Battery battery = new Battery(MEDIUM_ACTIVE_COOLING, "Luminous");
-		checkAndAlertTest(battery, "ControllerAlerter",MEDIUM_ACTIVE_COOLING,BreachType.TOO_HIGH);
+	public void controllerAlerterTest() throws Exception {
+		checkAndAlertTest("ControllerAlerter",MEDIUM_ACTIVE_COOLING,BreachType.TOO_HIGH);
 	}
 	
 	@Test
-	public void consoleAlerterTest() {
-		Battery battery = new Battery(PASSIVE_COOLING, "Luminous");
-		checkAndAlertTest(battery, "ConsoleAlerter",PASSIVE_COOLING,BreachType.TOO_HIGH);
+	public void consoleAlerterTest() throws Exception {
+		checkAndAlertTest("ConsoleAlerter",PASSIVE_COOLING,BreachType.TOO_HIGH);
 	}
 	
-	private void checkAndAlertTest(Battery battery, String alerter, String coolingType, BreachType breachType){
+	private void checkAndAlertTest(String alerter, String coolingType, BreachType breachType) throws Exception{
 		ICooling cooling = CoolingTypeFactory.getInstance().getCoolingType(coolingType);
 		IAlerter alerterSpy = Mockito.spy(AlerterFactory.getInstance().getAlerter(alerter));
-		BatteryHealthChecker.checkAndAlert(alerterSpy, cooling,BREACH_CHECKER,battery, 50);
+		BatteryHealthChecker.checkAndAlert(alerterSpy, cooling,BREACH_CHECKER,50);
 		Mockito.verify(alerterSpy).alert(breachType);
 	}
 	
-	
-
 }
