@@ -14,8 +14,13 @@ public class EmailAlerter implements IAlerter{
 
 	@Override
 	public void alert(BreachType breachType) {
-		IMailSender mailTemplate = MailSenderFactory.getInstance().getMailSender(breachType);
-        mailTemplate.sendMail(recepient);
+		IMailSender mailTemplate;
+		try {
+			mailTemplate = MailSenderFactory.getInstance().getMailSender(breachType);
+			mailTemplate.sendMail(recepient);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 	
 }
