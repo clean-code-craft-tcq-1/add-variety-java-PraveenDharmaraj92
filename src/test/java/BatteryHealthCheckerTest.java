@@ -7,6 +7,7 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.mockito.Mockito;
 
+import alert.CompositeAlerter;
 import alert.IAlerter;
 import cooling.CoolingLimit;
 import cooling.ICooling;
@@ -75,24 +76,39 @@ public class BatteryHealthCheckerTest {
 
 	@Test
 	public void emailAlerterTest() throws Exception {
-		checkAndAlertTest("EmailAlerter",HIGH_ACTIVE_COOLING, BreachType.TOO_HIGH);
+		checkAndAlertTest(BreachType.TOO_HIGH,HIGH_ACTIVE_COOLING);
 	}
 
 	@Test
 	public void controllerAlerterTest() throws Exception {
-		checkAndAlertTest("ControllerAlerter",MEDIUM_ACTIVE_COOLING,BreachType.TOO_HIGH);
+		checkAndAlertTest(BreachType.TOO_HIGH,MEDIUM_ACTIVE_COOLING);
 	}
 	
 	@Test
 	public void consoleAlerterTest() throws Exception {
-		checkAndAlertTest("ConsoleAlerter",PASSIVE_COOLING,BreachType.TOO_HIGH);
+		checkAndAlertTest(BreachType.TOO_HIGH,PASSIVE_COOLING);
 	}
 	
-	private void checkAndAlertTest(String alerter, String coolingType, BreachType breachType) throws Exception{
+	@Test
+	public void multipleAlerterTest() throws Exception{
+		CompositeAlerter alerter = addAlerters();
+		ICooling cooling = CoolingTypeFactory.getInstance().getCoolingType(HIGH_ACTIVE_COOLING);
+		BatteryHealthChecker.checkAndAlert(alerter, cooling,BREACH_CHECKER,50);
+	}
+	
+	private CompositeAlerter addAlerters() throws Exception{
+		CompositeAlerter alerter = new CompositeAlerter();
+		alerter.addAlerter(AlerterFactory.getInstance().getAlerter("EmailAlerter"));
+		alerter.addAlerter(AlerterFactory.getInstance().getAlerter("ConsoleAlerter"));
+		alerter.addAlerter(AlerterFactory.getInstance().getAlerter("ControllerAlerter"));
+		return alerter;
+	}
+	
+	private void checkAndAlertTest(BreachType breachType,String coolingType) throws Exception{
 		ICooling cooling = CoolingTypeFactory.getInstance().getCoolingType(coolingType);
-		IAlerter alerterSpy = Mockito.spy(AlerterFactory.getInstance().getAlerter(alerter));
-		BatteryHealthChecker.checkAndAlert(alerterSpy, cooling,BREACH_CHECKER,50);
-		Mockito.verify(alerterSpy).alert(breachType);
+		IAlerter mockAlerter = Mockito.mock(IAlerter.class);
+		BatteryHealthChecker.checkAndAlert(mockAlerter, cooling,BREACH_CHECKER,50);
+		Mockito.verify(mockAlerter).alert(breachType);
 	}
 	
 }
